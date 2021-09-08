@@ -7,13 +7,19 @@
 #define SHORT_STRING  20
 #define MEDIUM_SHORT_STRING 15
 #define VERY_SHORT_STRING 10
+#define USER_FILE_NAME  "users.txt"
+#define GROUP_FILE_NAME  "groups.txt"
+#define MEMBER_FILE_NAME  ""
+
 char initial_command;
 int authentication_token=0;
+
 // struct for Group
  struct Groups {
   int id;
   char name[SHORT_STRING];
 };
+
 // struct for User New Account
 struct Users{
 char full_name[SHORT_STRING], mobile_number[SHORT_STRING], email[MEDIUM_SHORT_STRING],
@@ -90,27 +96,23 @@ int login(){
       printf("\tPlease Enter your Password:");
     scanf("%s", &password);
 
-    int user_name_correct, password_correct;
-    user_name_correct=strcmp(user_name,"somrat");
-    password_correct=strcmp(password,"123");
-
     FILE *log;
-  struct Users user;
-  log = fopen("users.txt", "r");
-  if (log == NULL)
-  {
-    printf("FILE NOT FOUND!!!\n");
-    return 0; // login failed
-  }
+    struct Users user;
+    log = fopen(USER_FILE_NAME, "r");
+    if (log == NULL)
+      {
+        printf("FILE NOT FOUND!!!\n");
+        return 0; // login failed
+      }
 
-  while (fread(&user, sizeof(user), 1, log))
-  {
+    while (fread(&user, sizeof(user), 1, log))
+    {
     if (strcmp(user_name, user.user_name ) == 0 && strcmp(password, user.password)==0)
     {
       fclose(log);
       return 1; // login succeeded
     }
-  }
+    }
   getchar();
   fclose(log);
 
@@ -133,7 +135,7 @@ int create_new_account(){
     scanf("%s", &user.confirm_password);
     bool account_create = true;
 
-     FILE *log = fopen("users.txt", "a+");
+     FILE *log = fopen(USER_FILE_NAME, "a+");
      fwrite(&user, sizeof(struct  Users), 1, log);
      fclose(log);
      getchar();
@@ -166,7 +168,7 @@ void dashboard_data_show_admin_user(){
 
 void create_group()
 {
-  FILE *log = fopen("groups.txt", "a+");
+  FILE *log = fopen(GROUP_FILE_NAME, "a+");
  struct  Groups group;
    printf("\nEnter Group Id: ");
   scanf("%d", &group.id);
@@ -187,7 +189,7 @@ void display_groups(){
     struct  Groups group;
 
     // Open person.dat for reading
-    infile = fopen ("groups.txt", "r");
+    infile = fopen (GROUP_FILE_NAME, "r");
     if (infile == NULL)
     {
         fprintf(stderr, "\nError opening file\n");
