@@ -2,46 +2,66 @@
 #include <stdlib.h>
 #include<stdbool.h>
 #include<string.h>
-
-
+char initial_command;
+int authentication_token=0;
 int main()
 {
-    char initial_command;
-    int authentication_token=0, login_count = 1;
     first_window_messages();
-    printf("\tEnter your command keyword:");
-    scanf("%c", &initial_command);
-     if(initial_command == 'L')
+    initial_command_input();
+    initial_command_logic();
+    if (authentication_token==1){
+        printf("\t\tYou are Successfully login\n\n");
+    }
+    return 0;
+}
+
+/*Function for initial command*/
+void initial_command_logic(){
+   if(initial_command == 'L')
     {
-    for(int i=0; i<login_count;i++){
-
-     authentication_token =   login();
-
-    if (authentication_token==0){
-        login_count+=1;
-        printf("\t\tPlease Enter valid User Name and User Password!!\n\n");
-    }
-    }
+    login_all_logic();
     }
     else if(initial_command =='A'){
         create_new_account();
     }
-
-    if (authentication_token==1){
-        printf("\t\tYou are Successfully login\n\n");
+    else if(initial_command=='E'){
+        return 0;
     }
-    /*else{
-        printf("\t\tPlease Enter valid User Name and User Password!!\n\n");
-    }*/
-
-    return 0;
+    else {
+         printf("\t<<<<Please Enter Valid Command.>>>>\n\n");
+          initial_command_input();
+            initial_command_logic();
+    }
 }
+
+/*Initial command input code*/
+void initial_command_input(){
+
+ printf("\tEnter your command keyword:");
+    scanf("%c", &initial_command);
+    if(initial_command=='\n')
+        scanf("%c", &initial_command);
+    return;
+}
+
+
+/*Function for login logic*/
+void login_all_logic(){
+        authentication_token =   login();
+        if (authentication_token==0){
+        printf("\t\tPlease Enter valid User Name and User Password!!\n\n");
+        initial_command_input();
+            initial_command_logic();
+        }
+    return;
+}
+
 /*Function to show the initial information in first window*/
 void first_window_messages(){
-  printf("\t\t\t\t\t\tWelcome to Task Management System!\n\n\n");
-    printf("\t\t\t\t\t\tPlease Enter 'L' for Sign-in.\n\n");
-    printf("\t\t\t\t\t\tPlease Enter 'A' for New Account.\n\n");
-    printf("\t\t\t\t\t\tEnter 'E' for stop this application.\n\n");
+  printf("\t\t\t\t\t\t<<<<Welcome to Task Management System>>>>!\n\n\n");
+    printf("\t\t\t\t\t\t<<<<Please Enter 'L' for Sign-in.>>>>\n\n");
+    printf("\t\t\t\t\t\t<<<<Please Enter 'A' for New Account.>>>>\n\n");
+    printf("\t\t\t\t\t\t<<<<Enter 'E' for stop this application.>>>>\n\n");
     return;
 }
 
@@ -64,7 +84,7 @@ int login(){
 return 0;
 }
 /*Function to Create New Account*/
-void create_new_account(){
+int create_new_account(){
 char full_name[20], mobile_number[11], email[15], user_name[10],  password[10], confirm_password[10];
   printf("\tPlease enter your full name. Full name length must be between 1 to 20 characters:");
     scanf("%s", &full_name);
@@ -76,7 +96,19 @@ char full_name[20], mobile_number[11], email[15], user_name[10],  password[10], 
     scanf("%s", &user_name);
       printf("\tPlease enter your password. Password length must be between 1 to 10 characters:");
     scanf("%s", &password);
-      printf("\tPlease Enter your Confirm password.");
+      printf("\tPlease Enter your Confirm password:");
     scanf("%s", &confirm_password);
-    return;
+    bool account_create = true;
+    if(account_create == true){
+             printf("\t\t<<<You are Account is created successfully!!>>>\n\n");
+             printf("\n\n");
+                initial_command_input();
+                  printf("\n\n");
+                initial_command_logic();
+         }
+         else{
+                printf("\t\tYou are Account is not created successfully!!\n\n");
+         }
+
+    return 0;
 }
