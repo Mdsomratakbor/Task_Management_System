@@ -118,6 +118,7 @@ int login(){
 
 return 0;
 }
+
 /*Function to Create New Account*/
 int create_new_account(){
    struct Users user;
@@ -157,15 +158,20 @@ int create_new_account(){
 /*Function for dashboard data showing administrator user*/
 void dashboard_data_show_admin_user(){
     printf("\t\t\t\t\t\t<<<<Welcome to Task Management System Dashboard>>>>!\n\n\n");
-    printf("\t\t\t\t\t\t<<<<Please Enter 'L' for Sign-in.>>>>\n\n");
-    printf("\t\t\t\t\t\t<<<<Please Enter 'A' for New Account.>>>>\n\n");
+    printf("\t\t\t\t\t\t<<<<Please Enter 'G' for Create New Group.>>>>\n\n");
+    printf("\t\t\t\t\t\t<<<<Please Enter 'M' for New Account.>>>>\n\n");
     printf("\t\t\t\t\t\t<<<<Enter 'E' for stop this application.>>>>\n\n");
+    count_all_group();
+    display_groups();
+    initial_command_input();
+
+    if(initial_command == 'G'){
         create_group();
-        display_groups();
+    }
+        return;
 }
 
 /*Function to Group Create*/
-
 void create_group()
 {
   FILE *log = fopen(GROUP_FILE_NAME, "a+");
@@ -184,7 +190,7 @@ void create_group()
 
 /*Function To Display Group Information*/
 void display_groups(){
-
+    int total_group=0;
   FILE *infile;
     struct  Groups group;
 
@@ -197,14 +203,37 @@ void display_groups(){
     }
 
     // read file contents till end of file
-    while(fread(&group, sizeof(struct Groups), 1, infile))
-        printf ("id = %d name = %s\n", group.id,group.name);
-
+    while(fread(&group, sizeof(struct Groups), 1, infile)){
+        printf ("\t\t\t\t\t\t<<<<ID = %d NAME = %s.>>>>\n\n", group.id,group.name);
+    }
     // close file
     fclose (infile);
 
 }
 
+/*Function to Count All Groups*/
+void count_all_group(){
+
+ int total_group=0;
+  FILE *infile;
+    struct  Groups group;
+
+    // Open person.dat for reading
+    infile = fopen (GROUP_FILE_NAME, "r");
+    if (infile == NULL)
+    {
+        fprintf(stderr, "\nError opening file\n");
+        exit (1);
+    }
+
+    // read file contents till end of file
+    while(fread(&group, sizeof(struct Groups), 1, infile)){
+       total_group+=1;
+    }
+    printf("\t\t\t\t\t\t<<<<Total Groups:%d!!>>>>\n",total_group);
+    // close file
+    fclose (infile);
+}
 
 
 
