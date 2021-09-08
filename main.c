@@ -94,9 +94,25 @@ int login(){
     user_name_correct=strcmp(user_name,"somrat");
     password_correct=strcmp(password,"123");
 
-    if(user_name_correct == 0 && password_correct == 0){
-        return 1;
+    FILE *log;
+  struct Users user;
+  log = fopen("users.txt", "r");
+  if (log == NULL)
+  {
+    printf("FILE NOT FOUND!!!\n");
+    return 0; // login failed
+  }
+
+  while (fread(&user, sizeof(user), 1, log))
+  {
+    if (strcmp(user_name, user.user_name ) == 0 && strcmp(password, user.password)==0)
+    {
+      fclose(log);
+      return 1; // login succeeded
     }
+  }
+  getchar();
+  fclose(log);
 
 return 0;
 }
