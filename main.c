@@ -3,13 +3,14 @@
 #include<stdbool.h>
 #include<string.h>
 #include<time.h>
-#define LONG_STRING 100
+#define VERY_LONG_STRING 300
 #define SHORT_STRING  20
 #define MEDIUM_SHORT_STRING 15
 #define VERY_SHORT_STRING 10
 #define USER_FILE_NAME  "users.txt"
 #define GROUP_FILE_NAME  "groups.txt"
-#define MEMBER_FILE_NAME  ""
+#define MEMBER_FILE_NAME  "group_members.txt"
+#define MEMBER_TASK_FILE_NAME  "group_members_task.txt"
 
 char initial_command;
 int authentication_token=0;
@@ -26,6 +27,23 @@ char full_name[SHORT_STRING], mobile_number[SHORT_STRING], email[MEDIUM_SHORT_ST
 user_name[VERY_SHORT_STRING],  password[VERY_SHORT_STRING], confirm_password[VERY_SHORT_STRING];
 };
 
+
+// struct for Group Member Create
+struct Members{
+    int gorup_id;
+    int member_id;
+    char mobile_number[SHORT_STRING], email[MEDIUM_SHORT_STRING],
+    user_name[VERY_SHORT_STRING];
+
+};
+
+// struct for Group Member Task Assign
+struct MembersTask{
+    int group_id;
+    int group_member_id;
+    char member_user_name[VERY_SHORT_STRING];
+    char task_description[VERY_LONG_STRING];
+};
 
 int main()
 {
@@ -159,16 +177,32 @@ int create_new_account(){
 void dashboard_data_show_admin_user(){
     printf("\t\t\t\t\t\t<<<<Welcome to Task Management System Dashboard>>>>!\n\n\n");
     printf("\t\t\t\t\t\t<<<<Please Enter 'G' for Create New Group.>>>>\n\n");
-    printf("\t\t\t\t\t\t<<<<Please Enter 'M' for New Account.>>>>\n\n");
+    printf("\t\t\t\t\t\t<<<<Please Enter 'M' for New Member Add in Group.>>>>\n\n");
+     printf("\t\t\t\t\t\t<<<<Please Enter 'T' for Group Members Task Assign.>>>>\n\n");
     printf("\t\t\t\t\t\t<<<<Enter 'E' for stop this application.>>>>\n\n");
     count_all_group();
     display_groups();
     initial_command_input();
+dashboard_all_command_for_admin_user();
 
-    if(initial_command == 'G'){
+        return;
+}
+
+/*Function for dashboard command */
+void dashboard_all_command_for_admin_user(){
+
+ if(initial_command == 'G'){
         create_group();
     }
-        return;
+    if(initial_command == 'M'){
+
+        add_gorup_member();
+    }
+    if( initial_command == 'T' ){
+
+        group_member_task_assign();
+    }
+    return;
 }
 
 /*Function to Group Create*/
@@ -236,9 +270,129 @@ void count_all_group(){
 }
 
 
+/*Function for create group members*/
+void add_gorup_member(){
+struct Members member;
+  printf("\tPlease enter Group Id:");
+    scanf("%d", &member.gorup_id);
+      printf("\tPlease enter Member Id:");
+    scanf("%d", &member.member_id);
+     printf("\tPlease enter your User name. User Name length must be between 1 to 10 characters:");
+    scanf("%s", &member.user_name);
+      printf("\tPlease enter your email address. Email length must be between 1 to 15 characters:");
+    scanf("%s", &member.email);
+      printf("\tPlease enter your mobile number. Mobile number length must be between 1 to 11 characters:");
+    scanf("%s", &member.mobile_number);
+    bool account_create = true;
+
+     FILE *log = fopen(MEMBER_FILE_NAME, "a+");
+     fwrite(&member, sizeof(struct  Members), 1, log);
+     fclose(log);
+     getchar();
+
+    if(account_create == true){
+             printf("\t\t<<<You are successfully add member in Group=> %d.>>>\n\n", member.gorup_id);
+             display_group_members(member.gorup_id);
+             printf("\n\n");
+                initial_command_input();
+                  printf("\n\n");
+                dashboard_all_command_for_admin_user();
+         }
+         else{
+                printf("\t\tYou are Account is not created successfully!!\n\n");
+         }
+
+    return 0;
+}
+
+/*Function To Display  Group Members By Group Id*/
+void display_group_members(int gorup_id){
+  FILE *infile;
+    struct  Members member;
+
+    // Open person.dat for reading
+    infile = fopen (MEMBER_FILE_NAME, "r");
+    if (infile == NULL)
+    {
+        fprintf(stderr, "\nError opening file\n");
+        exit (1);
+    }
+
+    // read file contents till end of file
+    while(fread(&member, sizeof(struct Members), 1, infile)){
+            if(gorup_id==member.gorup_id){
+        printf ("\t\t\t<<<<GroupID = %d MemberID = %d User Name = %s Email = %s Mobile = %s.>>>>\n\n", member.gorup_id,member.member_id, member.user_name, member.email, member.email);
+            }
+    }
+    // close file
+    fclose (infile);
+
+}
+
+/*Function for task assign in group members*/
+void group_member_task_assign(){
+   struct MembersTask member_task;
+  printf("\tPlease enter GroupId:");
+    scanf("%d", &member_task.group_id);
+    display_group_members(member_task.group_id);
+
+    printf("\tPlease enter Group MemberId:");
+    scanf("%d", &member_task.group_member_id);
+
+      printf("\tPlease enter your Member User name. Member User Name length must be between 1 to 10 characters:");
+    scanf("%s", &member_task.member_user_name);
+
+      printf("\tEnter Member Task. Task Description length must be between 1 to 300 characters:");
+    scanf("%[^.]", &member_task.task_description);
+
+    bool account_create = true;
+
+     FILE *log = fopen(MEMBER_TASK_FILE_NAME, "a+");
+     fwrite(&member_task, sizeof(struct  MembersTask), 1, log);
+     fclose(log);
+     getchar();
+
+    if(account_create == true){
+             printf("\t\t<<<Member %d Task Assign is successfully!!>>>\n\n", member_task.group_member_id);
+             display_group_members_task(member_task.group_id);
+             printf("\n\n");
+                initial_command_input();
+                  printf("\n\n");
+                dashboard_all_command_for_admin_user();
+         }
+         else{
+                printf("\t\tYou are Account is not created successfully!!\n\n");
+         }
+
+    return 0;
 
 
+}
 
+
+/*Function To Display  Group Members Task By Group Id*/
+void display_group_members_task(int gorup_id){
+  FILE *infile;
+    struct  MembersTask member_task;
+
+    // Open person.dat for reading
+    infile = fopen (MEMBER_TASK_FILE_NAME, "r");
+    if (infile == NULL)
+    {
+        fprintf(stderr, "\nError opening file\n");
+        exit (1);
+    }
+
+    // read file contents till end of file
+    while(fread(&member_task, sizeof(struct MembersTask), 1, infile)){
+            if(gorup_id==member_task.group_id){
+        printf ("\t<<<<GroupID = %d MemberID = %d User Name = %s Description = %s.>>>>\n\n", member_task.group_id,member_task.group_member_id, member_task.member_user_name ,  member_task.task_description );
+            }
+    }
+    // close file
+    fclose (infile);
+
+}
 
 
 
