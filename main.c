@@ -179,6 +179,8 @@ void dashboard_data_show_admin_user(){
     printf("\t\t\t\t\t\t<<<<Please Enter 'G' for Create New Group.>>>>\n\n");
     printf("\t\t\t\t\t\t<<<<Please Enter 'M' for New Member Add in Group.>>>>\n\n");
      printf("\t\t\t\t\t\t<<<<Please Enter 'T' for Group Members Task Assign.>>>>\n\n");
+     printf("\t\t\t\t\t\t<<<<Please Enter 'D' for  Members Task Show.>>>>\n\n");
+         printf("\t\t\t\t\t\t<<<<Please Enter 'U' for  All User Information.>>>>\n\n");
     printf("\t\t\t\t\t\t<<<<Enter 'E' for stop this application.>>>>\n\n");
     count_all_group();
     display_groups();
@@ -194,14 +196,27 @@ void dashboard_all_command_for_admin_user(){
  if(initial_command == 'G'){
         create_group();
     }
-    if(initial_command == 'M'){
+   else if(initial_command == 'M'){
 
         add_gorup_member();
     }
-    if( initial_command == 'T' ){
+   else if( initial_command == 'T' ){
 
         group_member_task_assign();
     }
+   else if(initial_command== 'D')
+   {
+        display_members_task();
+   }
+   else if(initial_command== 'U')
+   {
+        display_all_user();
+   }
+   else{
+            initial_command_input();
+                  printf("\n\n");
+                dashboard_all_command_for_admin_user();
+   }
     return;
 }
 
@@ -269,7 +284,6 @@ void count_all_group(){
     fclose (infile);
 }
 
-
 /*Function for create group members*/
 void add_gorup_member(){
 struct Members member;
@@ -309,7 +323,6 @@ struct Members member;
 void display_group_members(int gorup_id){
   FILE *infile;
     struct  Members member;
-
     // Open person.dat for reading
     infile = fopen (MEMBER_FILE_NAME, "r");
     if (infile == NULL)
@@ -317,7 +330,6 @@ void display_group_members(int gorup_id){
         fprintf(stderr, "\nError opening file\n");
         exit (1);
     }
-
     // read file contents till end of file
     while(fread(&member, sizeof(struct Members), 1, infile)){
             if(gorup_id==member.gorup_id){
@@ -369,7 +381,6 @@ void group_member_task_assign(){
 
 }
 
-
 /*Function To Display  Group Members Task By Group Id*/
 void display_group_members_task(int gorup_id){
   FILE *infile;
@@ -394,12 +405,68 @@ void display_group_members_task(int gorup_id){
 
 }
 
+/*Function to seen personal Task*/
+void display_members_task(){
+    int member_id;
+    printf("\n\n\t\t\t<<<Please Enter your Member Id to see your Task>>>> :");
+    scanf("%d", &member_id);
+  FILE *infile;
+    struct  MembersTask member_task;
+
+    // Open person.dat for reading
+    infile = fopen (MEMBER_TASK_FILE_NAME, "r");
+    if (infile == NULL)
+    {
+        fprintf(stderr, "\nError opening file\n");
+        exit (1);
+    }
+
+    // read file contents till end of file
+    while(fread(&member_task, sizeof(struct MembersTask), 1, infile)){
+            if(member_id==member_task.group_member_id){
+        printf ("\tGroupID = %d || MemberID = %d || User Name = %s  ||Description = %s.\n\n", member_task.group_id,member_task.group_member_id, member_task.member_user_name ,  member_task.task_description );
+            }
+            else{
+               initial_command_input();
+                  printf("\n\n");
+                dashboard_all_command_for_admin_user();
+            }
+    }
+    // close file
+    fclose (infile);
+
+}
+
+/*Function to seen all User*/
+void display_all_user(){
 
 
+  FILE *infile;
+    struct  Users user;
+
+    // Open person.dat for reading
+    infile = fopen (USER_FILE_NAME, "r");
+    if (infile == NULL)
+    {
+        fprintf(stderr, "\nError opening file\n");
+        exit (1);
+    }
+
+    // read file contents till end of file
+    while(fread(&user, sizeof(struct Users), 1, infile)){
+
+        printf ("\tFull Name = %s || Email = %s || Mobile = %s  || User Name = %s .\n\n", user.full_name,user.email, user.mobile_number, user.user_name );
 
 
+               initial_command_input();
+                  printf("\n\n");
+                dashboard_all_command_for_admin_user();
 
+    }
+    // close file
+    fclose (infile);
 
+}
 
 
 
